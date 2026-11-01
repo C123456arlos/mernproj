@@ -71,10 +71,14 @@ const clerkWebhooks = async (req, res) => {
         switch (type) {
             case 'user.created': {
                 const userData = {
-                    _id: data.id,
-                    email: data.email_addresses[0].email_address,
-                    username: data.first_name + '' + data.last_name,
-                    image: data.image_url,
+                    _id: '1',
+                    email: '1',
+                    username: '1',
+                    image: '1',
+                    // _id: data.id,
+                    // email: data.email_addresses[0].email_address,
+                    // username: data.first_name + '' + data.last_name,
+                    // image: data.image_url,
                 }
                 await User.create(userData)
                 break;
