@@ -56,57 +56,57 @@
 // }
 
 
-import User from '../models/User.js'
-import { Webhook } from 'svix'
-const clerkWebhooks = async (req, res) => {
-    try {
-        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
-        const headers = {
-            'svix-id': req.headers['svix-id'],
-            'svix-signature': req.headers['svix-signature'],
-            'svix-timestamp': req.headers['svix-timestamp']
-        }
-        await whook.verify(JSON.stringify(req.body), headers)
-        const { data, type } = req.body
-        switch (type) {
-            case 'user.created': {
-                const userData = {
-                    _id: '1',
-                    email: '1',
-                    username: '1',
-                    image: '1',
-                    // _id: data.id,
-                    // email: data.email_addresses[0].email_address,
-                    // username: data.first_name + '' + data.last_name,
-                    // image: data.image_url,
-                }
-                await User.create(userData)
-                break;
-            }
-            case 'user.updated': {
-                const userData = {
-                    _id: data.id,
-                    email: data.email_addresses[0].email_address,
-                    username: data.first_name + '' + data.last_name,
-                    image: data.image_url,
-                }
-                await User.findByIdAndUpdate(data.id, userData)
-                break;
-            }
-            case 'user.deleted': {
-                await User.findByIdAndDelete(data.id)
-                break;
-            }
-            default:
-                break;
-        }
-        res.json({ success: true, message: 'webhook received' })
-    } catch (error) {
-        console.log(error.message)
-        res.json({ success: false, message: error.message })
-    }
-}
-export default clerkWebhooks
+// import User from '../models/User.js'
+// import { Webhook } from 'svix'
+// const clerkWebhooks = async (req, res) => {
+//     try {
+//         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
+//         const headers = {
+//             'svix-id': req.headers['svix-id'],
+//             'svix-signature': req.headers['svix-signature'],
+//             'svix-timestamp': req.headers['svix-timestamp']
+//         }
+//         await whook.verify(JSON.stringify(req.body), headers)
+//         const { data, type } = req.body
+//         switch (type) {
+//             case 'user.created': {
+//                 const userData = {
+//                     _id: '1',
+//                     email: '1',
+//                     username: '1',
+//                     image: '1',
+//                     // _id: data.id,
+//                     // email: data.email_addresses[0].email_address,
+//                     // username: data.first_name + '' + data.last_name,
+//                     // image: data.image_url,
+//                 }
+//                 await User.create(userData)
+//                 break;
+//             }
+//             case 'user.updated': {
+//                 const userData = {
+//                     _id: data.id,
+//                     email: data.email_addresses[0].email_address,
+//                     username: data.first_name + '' + data.last_name,
+//                     image: data.image_url,
+//                 }
+//                 await User.findByIdAndUpdate(data.id, userData)
+//                 break;
+//             }
+//             case 'user.deleted': {
+//                 await User.findByIdAndDelete(data.id)
+//                 break;
+//             }
+//             default:
+//                 break;
+//         }
+//         res.json({ success: true, message: 'webhook received' })
+//     } catch (error) {
+//         console.log(error.message)
+//         res.json({ success: false, message: error.message })
+//     }
+// }
+// export default clerkWebhooks
 
 
 
@@ -117,7 +117,7 @@ export default clerkWebhooks
 // import { httpAction } from "./_generated/server"
 // const http = httpRouter()
 // http.route({
-//     path: '/clerk-webhook', 
+//     path: '/clerk-webhook',
 //     method: 'POST',
 //     handler: httpAction(async (ctx, request) => {
 
@@ -161,7 +161,7 @@ export default clerkWebhooks
 //         console.log('evt', evt)
 //         } catch (error) {
 //             console.error('error verifying webhook', error)
-//           return new Response('error occurred', {status:400})  
+//           return new Response('error occurred', {status:400})
 //         }
 //         // const eventType = payload.type
 //         const eventType = evt.type
@@ -185,3 +185,51 @@ export default clerkWebhooks
 //     })
 // })
 // export default http
+
+import User from '../models/User.js'
+import { Webhook } from 'svix'
+const clerkWebhooks = async (req, res) => {
+    try {
+        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
+        const headers = {
+            'svix-id': req.headers['svix-id'],
+            'svix-signature': req.headers['svix-signature'],
+            'svix-timestamp': req.headers['svix-timestamp']
+        }
+        await whook.verify(JSON.stringify(req.body), headers)
+        const { data, type } = req.body
+        switch (type) {
+            case 'user.created': {
+                const userData = {
+                    _id: data.id,
+                    email: data.email_addresses[0].email_address,
+                    username: data.first_name + '' + data.last_name,
+                    image: data.image_url,
+                }
+                await User.create(userData)
+                break;
+            }
+            case 'user.updated': {
+                const userData = {
+                    _id: data.id,
+                    email: data.email_addresses[0].email_address,
+                    username: data.first_name + '' + data.last_name,
+                    image: data.image_url,
+                }
+                await User.findByIdAndUpdate(data.id, userData)
+                break;
+            }
+            case 'user.deleted': {
+                await User.findByIdAndDelete(data.id)
+                break;
+            }
+            default:
+                break;
+        }
+        res.json({ success: true, message: 'webhook received' })
+    } catch (error) {
+        console.log(error.message)
+        res.json({ success: false, message: error.message })
+    }
+}
+export default clerkWebhooks
