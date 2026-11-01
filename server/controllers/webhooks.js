@@ -2,19 +2,24 @@ import { Webhook } from "svix"
 import User from '../models/User.js'
 export const clerkWebhooks = async (req, res) => {
     try {
-        const whook = new Webhook('whsec_yx60XjgRyO6XR0MbExSc6E4TeXl7k3hP')
-        // const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
-        let evt
-        evt = whook.verify(JSON.stringify(req.body), {
+        // const whook = new Webhook('whsec_yx60XjgRyO6XR0MbExSc6E4TeXl7k3hP')
+        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET)
+        // let evt
+        await whook.verify(JSON.stringify(req.body), {
             "svix-id": req.headers['svix-id'],
             'svix-timestamp': req.headeres['svix-timestamp'],
             'svix-signature':req.headers['svix-signature']
         })
-        console.log('evt', evt)
-        const eventType= evt.type
+        // evt = whook.verify(JSON.stringify(req.body), {
+        //     "svix-id": req.headers['svix-id'],
+        //     'svix-timestamp': req.headeres['svix-timestamp'],
+        //     'svix-signature':req.headers['svix-signature']
+        // })
+        // console.log('evt', evt)
+        // const eventType= evt.type
         const { data, type } = req.body
-        switch (eventType) {
-        // switch (type) {
+        // switch (eventType) {
+        switch (type) {
             case 'user.created': {
                 const userData = {
                     _id: data.id,
