@@ -18,7 +18,10 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "form-data": "^4.0.1",
+<<<<<<< HEAD
     "humanize-duration": "^3.35.0",
+=======
+>>>>>>> 0c0728c727a5381719ce9b993453f4f3ad5bf6bc
     "mailgun.js": "^11.1.0",
     "mongoose": "^9.9.2",
     "multer": "^2.2.0",

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import mongoose from 'mongoose'
 const userSchema = mongoose.Schema({
     clerkUserId: {
@@ -15,11 +16,24 @@ const userSchema = mongoose.Schema({
     // _id: { type: String, required: true },
     name: { type: String, required: true },
     email: { type: String, required: true },
+=======
+import mongoose from "mongoose"
+const userSchema = new mongoose.Schema({
+        clerkUserId: {
+        type: String,
+        required: true
+    },
+    _id: { type: String, required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    imageUrl: { type: String, required: true },
+>>>>>>> 0c0728c727a5381719ce9b993453f4f3ad5bf6bc
     enrolledCourses: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref:'Course'
         }
+<<<<<<< HEAD
     ],
     lectureId: { type: String,},
 }, { timestamps: true })
@@ -183,3 +197,9 @@ export const User = mongoose.model('User', userSchema)
 // }, { timestamps: true, minimize: false, strictPopulate:false })
 
 // export const User = mongoose.model('User', userSchema)
+=======
+    ]
+}, { timestamps: true })
+const User = mongoose.model('User', userSchema)
+export default User
+>>>>>>> 0c0728c727a5381719ce9b993453f4f3ad5bf6bc
