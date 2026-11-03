@@ -1,7 +1,9 @@
 import React, { useContext } from 'react'
 import {assets} from '../../assets/assets'
 import { Link } from 'react-router-dom'
-import { SignOutButton, useClerk, UserButton, useUser } from '@clerk/clerk-react'
+// import { SignOutButton, useClerk, UserButton, useUser } from '@clerk/clerk-react'
+import { SignOutButton, useClerk, UserButton, useUser } from '@clerk/react'
+
 import { AppContext } from '../../context/AppContext'
 const Navbar = () => {
     const {navigate, isEducator}=useContext(AppContext)
