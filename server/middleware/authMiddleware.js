@@ -1,4 +1,55 @@
-<<<<<<< HEAD
+// import{ User }from "../models/User.js"
+// import { clerkClient } from '@clerk/express'
+// import { getAuth } from "@clerk/express"
+// export const protect = async (req, res, next) => {
+ 
+//     const { userId } = getAuth(req)
+//     if (!userId) {
+//         res.json({ success: false, message: 'not authenticated' })
+//     } else {
+//        const clerkUser = await clerkClient.users.getUser(userId);
+//         const extractEmailFromUserInfo =
+//             clerkUser.emailAddresses.find(
+//                 (item) => item.id === clerkUser.primaryEmailAddressId,
+//             ) || clerkUser.emailAddresses[0];
+//         const image = clerkUser.imageUrl
+//         const email = extractEmailFromUserInfo.emailAddress;
+//         const name = clerkUser.firstName + ' ' + clerkUser.lastName
+
+
+//         const newlyCreatedDbUser = await User.findOneAndUpdate(
+//             {
+//                 clerkUserId: userId,
+//             },
+//             {
+//                 clerkUserId: userId,
+//                 email,
+//                 image,
+//                 username: name
+//             },
+//             {
+//                 new: true,
+//                 upsert: true,
+//                 setDefaultsOnInsert: true,
+//             },
+//         );
+//         const user = userId
+//         req.user = newlyCreatedDbUser
+
+//         next()
+//     }
+// }
+
+// export const protectOwner = async (req, res, next) => {
+//     const { userId } = getAuth(req)
+//     req.owner = userId
+//     next()
+// }
+
+
+
+
+
 import { clerkClient } from "@clerk/express"
 export const protectEducator = async (req, res, next) => {
     try {
@@ -12,61 +63,6 @@ export const protectEducator = async (req, res, next) => {
         res.json({success:false, message:error.message})
     }
 }
-=======
-import User from "../models/User.js"
-import { clerkClient } from '@clerk/express'
-import { getAuth } from "@clerk/express"
-export const protect = async (req, res, next) => {
- 
-    const { userId } = getAuth(req)
-    if (!userId) {
-        res.json({ success: false, message: 'not authenticated' })
-    } else {
-       const clerkUser = await clerkClient.users.getUser(userId);
-        const extractEmailFromUserInfo =
-            clerkUser.emailAddresses.find(
-                (item) => item.id === clerkUser.primaryEmailAddressId,
-            ) || clerkUser.emailAddresses[0];
-        const image = clerkUser.imageUrl
-        const email = extractEmailFromUserInfo.emailAddress;
-        const name = clerkUser.firstName + ' ' + clerkUser.lastName
-
-
-        const newlyCreatedDbUser = await User.findOneAndUpdate(
-            {
-                clerkUserId: userId,
-            },
-            {
-                clerkUserId: userId,
-                email,
-                image,
-                username: name
-            },
-            {
-                new: true,
-                upsert: true,
-                setDefaultsOnInsert: true,
-            },
-        );
-        const user = userId
-        req.user = newlyCreatedDbUser
-
-        next()
-    }
-}
-
-export const protectOwner = async (req, res, next) => {
-    const { userId } = getAuth(req)
-    req.owner = userId
-    next()
-}
-
-
-
-
-
-
-
 
 
 
@@ -310,4 +306,3 @@ export const protectOwner = async (req, res, next) => {
 //         );
 //     }),
 // );
->>>>>>> 0c0728c727a5381719ce9b993453f4f3ad5bf6bc

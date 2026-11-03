@@ -4,12 +4,7 @@ import cors from 'cors'
 import connectDB from './configs/db.js'
 import { clerkMiddleware } from '@clerk/express'
 import clerkWebhooks from './controllers/clerkWebhooks.js'
-<<<<<<< HEAD
 import userRouter from './routes/userRoute.js'
-=======
-import userRouter from './routes/userRoutes.js'
-
->>>>>>> 0c0728c727a5381719ce9b993453f4f3ad5bf6bc
 import dns  from "node:dns/promises"
 import educatorRouter from './routes/educatorRoute.js'
 import connectCloudinary from './configs/cloudinary.js'
@@ -29,21 +24,17 @@ app.use('/clerk', clerkWebhooks)
 app.use('/api/educator', express.json(), educatorRouter)
 app.use('/api/course', express.json(), courseRouter)
 app.get('/', (req, res) => res.send('server running'))
-<<<<<<< HEAD
 // app.use('/api/user', educatorRouter)
 // app.use('/api/user', protect)
 app.use('/api/user', userRouter)
 app.use('/api/user', userAuthRouter)
 
-=======
 app.use('/api/user', userRouter)
->>>>>>> 0c0728c727a5381719ce9b993453f4f3ad5bf6bc
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => console.log(`server running on port ${PORT}`))
 
 
-<<<<<<< HEAD
 
 
 
@@ -95,5 +86,3 @@ app.listen(PORT, () => console.log(`server running on port ${PORT}`))
 
 // const PORT = process.env.PORT || 3000
 // app.listen(PORT, () => console.log(`server running on port ${PORT}`))
-=======
->>>>>>> 0c0728c727a5381719ce9b993453f4f3ad5bf6bc
