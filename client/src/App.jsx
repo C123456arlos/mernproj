@@ -13,6 +13,7 @@ import StudentsEnrolled from './pages/educator/StudentsEnrolled'
 import AddCourse from './pages/educator/AddCourse'
 import Navbar from './components/student/Navbar'
 import 'quill/dist/quill.snow.css'
+// import Navbar from './components/educator/Navbar'
 
 const App = () => {
   const isEducatorRoute=useMatch('/educator/*')
@@ -41,3 +42,29 @@ const App = () => {
 }
 
 export default App
+
+
+
+// import { SignOutButton, useClerk } from '@clerk/react'
+// import React from 'react'
+
+// const App = () => {
+  
+//   const {openSignIn} = useClerk()
+//   return (
+//     <div>
+
+//                <nav className={`fixed top-0 left-0  w-full flex items-center justify-between px-4 md:px-16 lg:px-24 xl:px-32 transition-all duration-500 z-50 "bg-white/80 shadow-md text-gray-700 backdrop-blur-lg py-3 md:py-4`}>
+//         <SignOutButton></SignOutButton>
+
+//                         <button onClick={openSignIn} className={`px-8 py-2.5 rounded-full ml-4 transition-all duration-500 `}>
+//                             Login
+//                         </button>
+
+//         </nav>
+//     </div>
+//   )
+// }
+
+// export default App
+// 7:43
