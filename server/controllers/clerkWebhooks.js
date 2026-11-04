@@ -1,4 +1,4 @@
-import stripe from 'stripe'
+import Stripe from 'stripe'
 import {User} from '../models/User.js'
 import { Webhook } from 'svix'
 import { Purchase } from '../models/Purchase.js'
@@ -47,13 +47,19 @@ const clerkWebhooks = async (req, res) => {
         res.json({ success: false, message: error.message })
     }
 }
+export default clerkWebhooks
 export const stripeWebhooks = async (req, res) => {
     const stripeInstance=new stripe(process.env.STRIPE_SECRET_KEY)   
     const sig = req.headers['stripe-signature']
     console.log('sig', sig)
     let event
     try {
-        event= stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET)
+        event= Stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET)
+    } catch (error) {
+         console.log('stripe error', error)
+        res.status(400).send(`webhook event error ${error.message}`, req.body, sig)     
+    }
+    try {
     switch (event.type) {
         case 'payment_intent.succeeded': {
             const paymentIntent = event.data.object
@@ -96,7 +102,6 @@ export const stripeWebhooks = async (req, res) => {
         res.status(400).send(`webhook error ${error.message}`)
     }
 }
-export default clerkWebhooks
 // 9:59
 
 
