@@ -210,7 +210,7 @@ export const stripeWebhooks = async (request, response) => {
  console.log(request, 'request from stripewebhooks')
     const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
     const sig = request.headers['stripe-signature']
-    y
+    
     const payload = JSON.stringify(body)
     const endpointSecret='whsec_oRI74zxcSnxFOBhPSesgy15UvtvgbZBr'
     let event
