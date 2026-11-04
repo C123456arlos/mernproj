@@ -1,4 +1,4 @@
-import Stripe from 'stripe'
+import stripe from 'stripe'
 import {User} from '../models/User.js'
 import { Webhook } from 'svix'
 import { Purchase } from '../models/Purchase.js'
@@ -54,7 +54,7 @@ export const stripeWebhooks = async (req, res) => {
     console.log('sig', sig)
     let event
     try {
-        event= Stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET)
+        event= stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET)
     } catch (error) {
          console.log('stripe error', error)
         res.status(400).send(`webhook event error ${error.message}`, req.body, sig)     
