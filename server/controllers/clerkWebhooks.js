@@ -231,10 +231,14 @@ export const stripeWebhooks = async (request, response) => {
         //     })
         //     const { purchaseId } = session.data[0].metadata
             
-        //     const purchaseData = await Purchase.findById(purchaseId)
+            // const purchaseData = await Purchase.findById(purchaseId)
             
-        //     const userData = await User.findById(purchaseData.userId)
-        //     const courseData = await Course.findById(purchaseData.courseId.toString())
+            // const userData = await User.findById(purchaseData.userId)
+            // const courseData = await Course.findById(purchaseData.courseId.toString())
+            const purchaseData = await Purchase.findById('6aeb8eea68d5597ad9b5ba7d')
+            
+            const userData = await User.findById('6aea3bee5b8e27bab5ba9535')
+            const courseData = await Course.findById('6aeb8e8268d5597ad9b5ba7c')
             courseData.enrolledStudents.push('6aea3bee5b8e27bab5ba9535')
             // courseData.enrolledStudents.push(userData)
             await courseData.save()
