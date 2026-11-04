@@ -57,6 +57,7 @@ await connectCloudinary()
 
 
 const app = express()
+app.use('/stripe', express.raw({type:'application/json'}), stripeWebhooks)
 app.use(cors())
 app.use(express.json())
 app.use(clerkMiddleware())
@@ -69,7 +70,6 @@ app.get('/', (req, res) => res.send('server running'))
 // app.use('/api/user', protect)
 app.use('/api/user', userRouter)
 app.use('/api/user', userAuthRouter)
-app.use('/stripe', express.raw({type:'application/json'}), stripeWebhooks)
 // app.use('/api/stripe', express.raw({ type: 'application/json' }), stripeWebhooks)
 app.use('/api/user', userRouter)
 
