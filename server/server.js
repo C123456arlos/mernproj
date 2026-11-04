@@ -57,7 +57,7 @@ await connectCloudinary()
 
 
 const app = express()
-app.use('/stripe', express.raw({type:'application/json'}), stripeWebhooks)
+app.post('/stripe', express.raw({type:'application/json'}), stripeWebhooks)
 app.use(cors())
 app.use(express.json())
 app.use(clerkMiddleware())

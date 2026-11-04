@@ -217,8 +217,8 @@ export const stripeWebhooks = async (request, response) => {
     try {
         event = stripeInstance.webhooks.constructEvent(payload,
  sig, 'whsec_oRI74zxcSnxFOBhPSesgy15UvtvgbZBr')
-    } catch (error) {
-        return response.status(400).send(`webhook error ${error.message}`)
+    } catch (sig) {
+        return response.status(400).send(`webhook error ${sig}`)
     }
     try {
         // switch (event.type) {
