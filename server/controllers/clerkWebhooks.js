@@ -107,107 +107,116 @@ export default clerkWebhooks
 //         response.status(400).send(`webhook err ${error.message}`)
 //     }
 // }
+const body=
+{
+    "id": "evt_3UY3BoIHXFA0eb7y1Xe2zaFI",
+        "object": "event",
+            "api_version": "2025-11-17.clover",
+                "created": 1793794877,
+                    "data": {
+        "object": {
+            "id": "pi_3UY3BoIHXFA0eb7y1u21L9uP",
+                "object": "payment_intent",
+                    "allowed_payment_method_types": [
+                        "card",
+                        "link"
+                    ],
+                        "amount": 100,
+                            "amount_capturable": 0,
+                                "amount_details": {
+                "tip": { }
+            },
+            "amount_received": 100,
+                "application": null,
+                    "application_fee_amount": null,
+                        "automatic_payment_methods": null,
+                            "canceled_at": null,
+                                "cancellation_reason": null,
+                                    "capture_method": "automatic_async",
+                                        "client_secret": "pi_3UY3BoIHXFA0eb7y1u21L9uP_secret_KY8RvmYnEAs0FsaYFBzLtRfiN",
+                                            "confirmation_method": "automatic",
+                                                "created": 1793794876,
+                                                    "currency": "usd",
+                                                        "customer": null,
+                                                            "customer_account": null,
+                                                                "description": null,
+                                                                    "excluded_payment_method_types": null,
+                                                                        "last_payment_error": null,
+                                                                            "latest_charge": "ch_3UY3BoIHXFA0eb7y1RK697wA",
+                                                                                "livemode": false,
+                                                                                    "managed_payments": {
+                "enabled": false
+            },
+            "metadata": { },
+            "next_action": null,
+                "on_behalf_of": null,
+                    "payment_details": {
+                "customer_reference": null,
+                    "order_reference": "cs_test_a1CBXA8JUnhaovcsBK318zKqyKjeUyg5ExdDtmp4YppXuxJhDebO5lUETo"
+            },
+            "payment_method": "pm_1UY3BnIHXFA0eb7yiWFDL48x",
+                "payment_method_configuration_details": null,
+                    "payment_method_options": {
+                "card": {
+                    "installments": null,
+                        "mandate_options": null,
+                            "network": null,
+                                "request_three_d_secure": "automatic"
+                },
+                "link": {
+                    "persistent_token": null
+                }
+            },
+            "payment_method_types": [
+                "card",
+                "link"
+            ],
+                "payment_record": null,
+                    "presentment_details": {
+                "presentment_amount": 1257,
+                    "presentment_currency": "bob"
+            },
+            "processing": null,
+                "receipt_email": null,
+                    "review": null,
+                        "setup_future_usage": null,
+                            "shared_payment_granted_token": null,
+                                "shipping": null,
+                                    "source": null,
+                                        "statement_descriptor": null,
+                                            "statement_descriptor_suffix": null,
+                                                "status": "succeeded",
+                                                    "transfer_data": null,
+                                                        "transfer_group": null
+        }
+    },
+    "livemode": false,
+        "pending_webhooks": 3,
+            "request": {
+        "id": null,
+            "idempotency_key": "8311e35b-414c-4268-a1f9-cd92e781951c"
+    },
+    "type": "payment_intent.succeeded"
+}
+
+
+
+
+
+
 
 
 export const stripeWebhooks = async (request, response) => {
  console.log(request, 'request from stripewebhooks')
     const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
     const sig = request.headers['stripe-signature']
-    const body= request.body
+    y
     const payload = JSON.stringify(body)
     const endpointSecret='whsec_oRI74zxcSnxFOBhPSesgy15UvtvgbZBr'
     let event
     try {
-        event = stripeInstance.webhooks.constructEvent({
-  "id": "evt_3UY3BoIHXFA0eb7y1Xe2zaFI",
-  "object": "event",
-  "api_version": "2025-11-17.clover",
-  "created": 1793794877,
-  "data": {
-    "object": {
-      "id": "pi_3UY3BoIHXFA0eb7y1u21L9uP",
-      "object": "payment_intent",
-      "allowed_payment_method_types": [
-        "card",
-        "link"
-      ],
-      "amount": 100,
-      "amount_capturable": 0,
-      "amount_details": {
-        "tip": {}
-      },
-      "amount_received": 100,
-      "application": null,
-      "application_fee_amount": null,
-      "automatic_payment_methods": null,
-      "canceled_at": null,
-      "cancellation_reason": null,
-      "capture_method": "automatic_async",
-      "client_secret": "pi_3UY3BoIHXFA0eb7y1u21L9uP_secret_KY8RvmYnEAs0FsaYFBzLtRfiN",
-      "confirmation_method": "automatic",
-      "created": 1793794876,
-      "currency": "usd",
-      "customer": null,
-      "customer_account": null,
-      "description": null,
-      "excluded_payment_method_types": null,
-      "last_payment_error": null,
-      "latest_charge": "ch_3UY3BoIHXFA0eb7y1RK697wA",
-      "livemode": false,
-      "managed_payments": {
-        "enabled": false
-      },
-      "metadata": {},
-      "next_action": null,
-      "on_behalf_of": null,
-      "payment_details": {
-        "customer_reference": null,
-        "order_reference": "cs_test_a1CBXA8JUnhaovcsBK318zKqyKjeUyg5ExdDtmp4YppXuxJhDebO5lUETo"
-      },
-      "payment_method": "pm_1UY3BnIHXFA0eb7yiWFDL48x",
-      "payment_method_configuration_details": null,
-      "payment_method_options": {
-        "card": {
-          "installments": null,
-          "mandate_options": null,
-          "network": null,
-          "request_three_d_secure": "automatic"
-        },
-        "link": {
-          "persistent_token": null
-        }
-      },
-      "payment_method_types": [
-        "card",
-        "link"
-      ],
-      "payment_record": null,
-      "presentment_details": {
-        "presentment_amount": 1257,
-        "presentment_currency": "bob"
-      },
-      "processing": null,
-      "receipt_email": null,
-      "review": null,
-      "setup_future_usage": null,
-      "shared_payment_granted_token": null,
-      "shipping": null,
-      "source": null,
-      "statement_descriptor": null,
-      "statement_descriptor_suffix": null,
-      "status": "succeeded",
-      "transfer_data": null,
-      "transfer_group": null
-    }
-  },
-  "livemode": false,
-  "pending_webhooks": 3,
-  "request": {
-    "id": null,
-    "idempotency_key": "8311e35b-414c-4268-a1f9-cd92e781951c"
-  },
-  "type": "payment_intent.succeeded"
-}, sig, 'whsec_oRI74zxcSnxFOBhPSesgy15UvtvgbZBr')
+        event = stripeInstance.webhooks.constructEvent(payload,
+ sig, 'whsec_oRI74zxcSnxFOBhPSesgy15UvtvgbZBr')
     } catch (error) {
         return response.status(400).send(`webhook error ${error.message}`)
     }
