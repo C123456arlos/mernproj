@@ -3,7 +3,7 @@ import 'dotenv/config'
 import cors from 'cors'
 import connectDB from './configs/db.js'
 import { clerkMiddleware } from '@clerk/express'
-import clerkWebhooks from './controllers/clerkWebhooks.js'
+import clerkWebhooks, { stripeWebhooks } from './controllers/clerkWebhooks.js'
 import userRouter from './routes/userRoute.js'
 import dns  from "node:dns/promises"
 import educatorRouter from './routes/educatorRoute.js'
@@ -28,6 +28,7 @@ app.get('/', (req, res) => res.send('server running'))
 // app.use('/api/user', protect)
 app.use('/api/user', userRouter)
 app.use('/api/user', userAuthRouter)
+app.post('/stripe', express.raw({type:'application/json'}), stripeWebhooks)
 
 app.use('/api/user', userRouter)
 
