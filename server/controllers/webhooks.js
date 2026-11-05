@@ -2,6 +2,7 @@ import Stripe from 'stripe'
 import Transaction from '../models/Transaction.js'
 import User from '../models/User.js'
 import { Purchase } from '../models/Purchase.js'
+import Course from '../models/Course.js'
 export const stripeWebhooks = async (request, response) => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
     const sig = request.headers['stripe-signature']
@@ -19,15 +20,22 @@ export const stripeWebhooks = async (request, response) => {
                     payment_intent:paymentIntent.id
                 })
                 const session = sessionList.data[0]
-                const { transactionId, appId } = session.metadata
+                const { transactionId, appId, purchaseId } = session.metadata
                 if (appId === 'app') {
-                    const purchase = await Purchase.findByIdAndUpdate('6aebaf1f80a6456a2038f000', { status: 'completed' }, { new: true })
-                    await purchase.save()
-                    //  const purchaseData = await Purchase.findByIdAndUpdate('6aebaf1f80a6456a2038f000', { status: 'pending' }, { new: true })
-                    // await purchaseData.save()
-                    // const purchase = await Purchase.findOne({ _id: '6aebaf1f80a6456a2038f000' })
-                    // purchase.status = 'pending'
-                    // await purchase.save()
+                     const purchaseData = await Purchase.findById(purchaseId)
+        purchaseData.status = 'pending'
+                    console.log(purchaseData)
+                    await purchaseData.save()
+        const courseDataId = purchaseData.courseId.toString()
+        console.log('coursedataid', courseDataId)
+        const courseData = await Course.findById(courseDataId)
+                    courseData.enrolledStudents.push(purchaseData.userId)
+                    await courseData.save()
+        console.log('courseData', courseData)
+        const userData = await User.findById(purchaseData.userId)
+        userData.enrolledCourses.push(purchaseData.courseId)
+                    console.log(userData) 
+                    await userData.save()
                     const transaction = await Transaction.findOne({ _id: transactionId, isPaid: false })
                     await User.updateOne({ _id: transaction.userId }, { $inc: { credits: transaction.credits } })
                     transaction.isPaid = 'app'

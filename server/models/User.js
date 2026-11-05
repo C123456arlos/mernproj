@@ -17,7 +17,13 @@ const userSchema = new mongoose.Schema({
     credits: {
         type: Number,
         default:20
-    }
+    },
+    enrolledCourses: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref:'Course'
+            }
+    ],
 })
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password'))
