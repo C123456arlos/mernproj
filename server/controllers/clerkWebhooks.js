@@ -242,7 +242,7 @@ export const stripeWebhooks = async (request, response) => {
         // }
             switch (event.type) {
                 case 'payment_intent.succeeded': {
-                      const purchase = await Purchase.findByIdAndUpdate('6aec5cbdcd3c4d8c12938091', { status: 'completed' }, { new: true })
+                      const purchase = await Purchase.findByIdAndUpdate('6aeb955a09e211ef563604d0', { status: 'completed' }, { new: true })
                     await purchase.save()
             const paymentIntent = event.data.object
             const paymentIntentId = paymentIntent.id
