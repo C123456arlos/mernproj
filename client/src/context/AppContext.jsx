@@ -1,78 +1,53 @@
+import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { dummyChats, dummyUserData } from "../assets/assets"
 import axios from 'axios'
-import { createContext, useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useUser, useAuth } from '@clerk/react'
-import { toast } from 'react-hot-toast'
-import { dummyCourses } from '../assets/assets'
-
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
-export const AppContext = createContext()
-export const AppProvider = ({ children }) => {
-    const { getToken } = useAuth()
-    const { user } = useUser()
-    const [isOwner, setIsOwner] = useState(false)
-    const [showHotelReg, setShowHotelReg] = useState(false)
-    const [searchedCities, setSearchedCities] = useState([])
-    const [rooms, setRooms] = useState([])
-    const currency = import.meta.env.VITE_CURRENCY
-    const navigate=useNavigate()
-    const [allCourses, setAllCourses] = useState([])
-    const [isEducator, setIsEducator] = useState(true)
-    const [enrolledCourses, setEnrolledCourses] = useState([])
-   
-    const fetchAllCourses = async () => {
-        setAllCourses(dummyCourses)
-    }
-    useEffect(() => {
-        fetchAllCourses()
-    }, [allCourses])
-    
-    useEffect(() => {
-        fetchAllCourses()
-        fetchUserEnrolledCourses()
-    })
-    const calculateRating = (course) => {
-        if (course.courseRatings.length === 0) {
-            return 0
-        }
-        let totalRating = 0
-        course.courseRatings.forEach(rating => {
-            totalRating+=rating.rating
-        })
-        return totalRating/course.courseRatings.length
-    }
-    const calculateChapterTime = (chapter) => {
-        let time = 0
-        chapter.chapterContent.map((lecture) => time += lecture.lectureDuration)
-        return humanizeDuration(time*60*1000, {units:['h', 'm']})
-    }
-    const calculateCourseDuration = (course) => {
-        let time = 0
-        course.courseContent.map((chapter) => chapter.chapterContent.map(
-            (lecture)=>time += lecture.lectureDuration
-        ))
-        return humanizeDuration(time*60*1000, {units:['h', 'm']})
-    }
-    const calculateLecturesNum = (course) => {
-        let totalLectures = 0
-        course.courseContent.forEach(chapter => {
-            if (Array.isArray(chapter.chapterContent)) {
-                totalLectures+=chapter.chapterContent.length
-            }
-        })
-        return totalLectures
-    } 
-    const fetchUserEnrolledCourses = async () => {
-        setEnrolledCourses(dummyCourses)
-    }
-    useEffect(() => {
-         fetchUserEnrolledCourses()
-    }, [enrolledCourses])
-    const fetchRooms = async () => {
+import toast from "react-hot-toast";
+axios.defaults.baseURL= import.meta.env.VITE_SERVER_URL
+const AppContext = createContext()
+export const AppContextProvider = ({ children }) => {
+    const navigate = useNavigate()
+    const [user, setUser] = useState(null)
+    const [chats, setChats] = useState([])
+    const [selectedChat, setSelectedChat] = useState(null)
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark')
+    const [token, setToken] = useState(localStorage.getItem('token') || null)
+    const [loadingUser, setLoadingUser]=useState(true)
+    const fetchUser = async () => {
         try {
-            const { data } = await axios.get('/api/rooms')
+            const { data } = await axios.get('/api/user/data', { headers: { Authorization: token } })
             if (data.success) {
-                setRooms(data.rooms)
+                setUser(data.user)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        } finally {
+            setLoadingUser(false)
+        }
+    }
+    const createNewChat = async () => {
+        try {
+            if (!user) return toast('login to create a new chat')
+            navigate('/')
+            await axios.get('/api/chat/create', { headers: { Authorization: token } })
+            await fetchUsersChats()
+        } catch (error) {
+            toast.error(error.message)
+        }
+    }
+    const fetchUsersChats = async () => {
+        try {
+            const { data } = await axios.get('/api/chat/get', { headers: { Authorization: token } })
+            if (data.success) {
+                setChats(data.chats)
+                if (data.chats.length === 0) {
+                    await createNewChat()
+                    return fetchUsersChats()
+                } else {
+                    setSelectedChat(data.chats[0])
+                }
             } else {
                 toast.error(data.message)
             }
@@ -80,46 +55,33 @@ export const AppProvider = ({ children }) => {
             toast.error(error.message)
         }
     }
-    const fetchUser = async () => {
-        try {
-            const { data } = await axios.get('/api/user', { headers: { Authorization: `Bearer ${await getToken()}` } })
-
-            if (data.success) {
-                setIsOwner(data.role === 'hotelOwner')
-
-                setSearchedCities(data.recentSearchedCities)
-            } else {
-                setTimeout(() => {
-                    fetchUser()
-                }, 5000)
-            }
-        } catch (error) {
-            toast.error(error.message)
+    useEffect(() => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
         }
-    }
-    const logToken = async () => {
-        console.log(await getToken())
-    }
+        localStorage.setItem('theme', theme)
+    },[theme])
     useEffect(() => {
         if (user) {
-            logToken()
+            fetchUsersChats()
+        } else {
+            setChats([])
+            setSelectedChat(null)
         }
     }, [user])
     useEffect(() => {
-        if (user) {
+        if (token) {
             fetchUser()
+        } else {
+            setUser(null)
+            setLoadingUser(false)
         }
-    }, [user])
-    useEffect(() => {
-        fetchRooms()
-    }, [])
-    console.log(rooms)
+    },[token])
     const value = {
-        currency, navigate, user, getToken, isOwner, setIsOwner, axios,
-        showHotelReg, setShowHotelReg, searchedCities, setSearchedCities,
-        rooms, setRooms,       currency, allCourses, navigate,
-        calculateRating, isEducator, setIsEducator, calculateLecturesNum, calculateCourseDuration,
-        calculateChapterTime, enrolledCourses, fetchUserEnrolledCourses
+        navigate, user, setUser, fetchUser, chats, setChats, selectedChat, setSelectedChat, theme, setTheme,
+        createNewChat, loadingUser, fetchUsersChats, token, setToken, axios
     }
     return (
         <AppContext.Provider value={value}>
@@ -127,202 +89,4 @@ export const AppProvider = ({ children }) => {
         </AppContext.Provider>
     )
 }
-export const useAppContext = () => useContext(AppContext)
-
-
-
-
-
-
-
-
-// import axios from 'axios'
-// import { createContext, useContext, useEffect, useState } from 'react'
-// import { useNavigate } from 'react-router-dom'
-// import { useUser, useAuth } from '@clerk/react'
-// import { toast } from 'react-hot-toast'
-
-// axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
-// export const AppContext = createContext()
-// // export const AppContext = createContext()
-// export const AppProvider = ({ children }) => {
-//     const { getToken } = useAuth()
-//     const [isOwner, setIsOwner] = useState(false)
-//     const [showHotelReg, setShowHotelReg] = useState(false)
-//     const [searchedCities, setSearchedCities] = useState([])
-//     const [rooms, setRooms] = useState([])
-//     const { user } = useUser()
-//     const currency = import.meta.env.VITE_CURRENCY
-//     const navigate=useNavigate()
-//     const [allCourses, setAllCourses] = useState([])
-//     const [isEducator, setIsEducator] = useState(true)
-//     const [enrolledCourses, setEnrolledCourses] = useState([])
-   
-//     const fetchAllCourses = async () => {
-//         setAllCourses(dummyCourses)
-//     }
-//     useEffect(() => {
-//         fetchAllCourses()
-//     }, [allCourses])
-    
-//     const calculateRating = (course) => {
-//         if (course.courseRatings.length === 0) {
-//             return 0
-//         }
-//         let totalRating = 0
-//         course.courseRatings.forEach(rating => {
-//             totalRating+=rating.rating
-//         })
-//         return totalRating/course.courseRatings.length
-//     }
-//     const calculateChapterTime = (chapter) => {
-//         let time = 0
-//         chapter.chapterContent.map((lecture) => time += lecture.lectureDuration)
-//         return humanizeDuration(time*60*1000, {units:['h', 'm']})
-//     }
-//     const calculateCourseDuration = (course) => {
-//         let time = 0
-//         course.courseContent.map((chapter) => chapter.chapterContent.map(
-//             (lecture)=>time += lecture.lectureDuration
-//         ))
-//         return humanizeDuration(time*60*1000, {units:['h', 'm']})
-//     }
-//     const calculateLecturesNum = (course) => {
-//         let totalLectures = 0
-//         course.courseContent.forEach(chapter => {
-//             if (Array.isArray(chapter.chapterContent)) {
-//                 totalLectures+=chapter.chapterContent.length
-//             }
-//         })
-//         return totalLectures
-//     }
-//     const fetchUserEnrolledCourses = async () => {
-//         setEnrolledCourses(dummyCourses)
-//     }
-//     useEffect(() => {
-//          fetchUserEnrolledCourses()
-//     }, [enrolledCourses])
-//     const fetchRooms = async () => {
-//         try {
-//             const { data } = await axios.get('/api/rooms')
-//             if (data.success) {
-//                 setRooms(data.rooms)
-//             } else {
-//                 toast.error(data.message)
-//             }
-//         } catch (error) {
-//             toast.error(error.message)
-//         }
-//     }
-//     const fetchUser = async () => {
-//         try {
-//             const { data } = await axios.get('/api/user', { headers: { Authorization: `Bearer ${await getToken()}` } })
-
-//             if (data.success) {
-//                 setIsOwner(data.role === 'hotelOwner')
-
-//                 setSearchedCities(data.recentSearchedCities)
-//             } else {
-//                 setTimeout(() => {
-//                     fetchUser()
-//                 }, 5000)
-//             }
-//         } catch (error) {
-//             toast.error(error.message)
-//         }
-//     }
-//     useEffect(() => {
-//         if (user) {
-//             fetchUser()
-//         }
-//     }, [user])
-//     useEffect(() => {
-//         fetchRooms()
-//     }, [])
-//     console.log(rooms)
-//     const value = {
-//         currency, navigate, user, getToken, isOwner, setIsOwner, axios,
-//         showHotelReg, setShowHotelReg, searchedCities, setSearchedCities,
-//         rooms, setRooms,       currency, allCourses, navigate,
-//         calculateRating, isEducator, setIsEducator, calculateLecturesNum, calculateCourseDuration,
-//         calculateChapterTime, enrolledCourses, fetchUserEnrolledCourses
-//     }
-//     return (
-//         <AppContext.Provider value={value}>
-//             {children}
-//         </AppContext.Provider>
-//     )
-// }
-// export const useAppContext = () => useContext(AppContext)
-
-
-
-
-
-// // import axios from 'axios'
-// // import { createContext, useContext, useEffect, useState } from 'react'
-// // import { useNavigate } from 'react-router-dom'
-// // import { useUser, useAuth } from '@clerk/react'
-// // import { toast } from 'react-hot-toast'
-
-// // axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL
-// // export const AppContext = createContext()
-// // export const AppProvider = ({ children }) => {
-// //     const currency = import.meta.env.VITE_CURRENCY || '$'
-// //     const navigate = useNavigate()
-// //     const { user } = useUser()
-// //     const { getToken } = useAuth()
-// //     const [isOwner, setIsOwner] = useState(false)
-// //     const [showHotelReg, setShowHotelReg] = useState(false)
-// //     const [searchedCities, setSearchedCities] = useState([])
-// //     const [rooms, setRooms] = useState([])
-// //     const fetchRooms = async () => {
-// //         try {
-// //             const { data } = await axios.get('/api/rooms')
-// //             if (data.success) {
-// //                 setRooms(data.rooms)
-// //             } else {
-// //                 toast.error(data.message)
-// //             }
-// //         } catch (error) {
-// //             toast.error(error.message)
-// //         }
-// //     }
-// //     const fetchUser = async () => {
-// //         try {
-// //             const { data } = await axios.get('/api/user', { headers: { Authorization: `Bearer ${await getToken()}` } })
-
-// //             if (data.success) {
-// //                 setIsOwner(data.role === 'hotelOwner')
-
-// //                 setSearchedCities(data.recentSearchedCities)
-// //             } else {
-// //                 setTimeout(() => {
-// //                     fetchUser()
-// //                 }, 5000)
-// //             }
-// //         } catch (error) {
-// //             toast.error(error.message)
-// //         }
-// //     }
-// //     useEffect(() => {
-// //         if (user) {
-// //             fetchUser()
-// //         }
-// //     }, [user])
-// //     useEffect(() => {
-// //         fetchRooms()
-// //     }, [])
-// //     console.log(rooms)
-// //     const value = {
-// //         currency, navigate, user, getToken, isOwner, setIsOwner, axios,
-// //         showHotelReg, setShowHotelReg, searchedCities, setSearchedCities,
-// //         rooms, setRooms
-// //     }
-// //     return (
-// //         <AppContext.Provider value={value}>
-// //             {children}
-// //         </AppContext.Provider>
-// //     )
-// // }
-// // export const useAppContext = () => useContext(AppContext)
+export const useAppContext=()=>useContext(AppContext)

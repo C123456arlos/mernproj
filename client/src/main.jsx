@@ -1,122 +1,13 @@
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
-// import { AppContextProvider } from './context/AppContext.jsx'
-// import { BrowserRouter } from 'react-router-dom'
-// import {ClerkProvider} from '@clerk/clerk-react'
-// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-// if (!PUBLISHABLE_KEY) {
-//   throw new Error('missing publishable key')
-// }
-// createRoot(document.getElementById('root')).render(
-//       <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl={'/'}>
-//     <BrowserRouter>
-//       <AppContextProvider>
-//         <App />
-//       </AppContextProvider>
-//     </BrowserRouter>
-//   </ClerkProvider>
-  
-// )
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
-// import { AppContextProvider } from './context/AppContext.jsx'
-// import { BrowserRouter } from 'react-router-dom'
-// import {ClerkProvider} from '@clerk/react'
-// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-// if (!PUBLISHABLE_KEY) {
-//   throw new Error('missing publishable key')
-// }
-// createRoot(document.getElementById('root')).render(
-//     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl={'/'}>
-//   <BrowserRouter>
-//   <AppContextProvider>
-//     <App />
-//   </AppContextProvider>
-//   </BrowserRouter>
-//     </ClerkProvider>
-  
-// )
-
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
-// import { BrowserRouter } from 'react-router-dom'
-// import { ClerkProvider } from '@clerk/react'
-// import { AppContextProvider } from './context/AppContext.jsx'
-
-// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
-// if (!PUBLISHABLE_KEY) {
-//   throw new Error('add your clerk publishable key to the .env file')
-// }
-
-// createRoot(document.getElementById('root')).render(
-//   <ClerkProvider>
-//     <BrowserRouter>
-//       <AppContextProvider>
-      
-
-//         <App />
-//       </AppContextProvider>
-//     </BrowserRouter>
-//   </ClerkProvider>
-// )
-
-
-// import { StrictMode } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './index.css'
-// import App from './App.jsx'
-// import { BrowserRouter } from 'react-router-dom'
-// import { ClerkProvider } from '@clerk/react'
-// import { AppContextProvider } from './context/AppContext.jsx'
-
-// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
-// if (!PUBLISHABLE_KEY) {
-//   throw new Error('add your clerk publishable key to the .env file')
-// }
-
-// createRoot(document.getElementById('root')).render(
-//   <ClerkProvider>
-//     <BrowserRouter>
-//       <AppContextProvider>
-      
-
-//         <App />
-//       </AppContextProvider>
-//     </BrowserRouter>
-//   </ClerkProvider>
-// )
-
-
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
-import { ClerkProvider } from '@clerk/react'
-import { AppProvider } from './context/AppContext.jsx'
-
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
-
-if (!PUBLISHABLE_KEY) {
-  throw new Error('add your clerk publishable key to the .env file')
-}
-
+import {AppContextProvider} from './context/AppContext.jsx'
 createRoot(document.getElementById('root')).render(
-  <ClerkProvider>
-    <BrowserRouter>
-      <AppProvider>
-      
-
-        <App />
-      </AppProvider>
-    </BrowserRouter>
-  </ClerkProvider>
+  <BrowserRouter>
+    <AppContextProvider>
+<App />
+    </AppContextProvider>
+  </BrowserRouter>,
 )

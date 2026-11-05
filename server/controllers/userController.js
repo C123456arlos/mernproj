@@ -1,378 +1,69 @@
-import Course from '../models/Course.js'
+import User from "../models/User.js"
+import jwt from 'jsonwebtoken'
+import bcrypt from "bcryptjs"
+import Chat from "../models/Chat.js"
 import { Purchase } from "../models/Purchase.js"
-import { User } from "../models/User.js"
-import Stripe from 'stripe'
-export const getUserData = async (req, res) => {
-    try {
-        const clerkId = req.auth.userId
-        const userId = await User.findOne({clerkId})
-        console.log('id', userId)
-        const id = userId._id
-        console.log('id', id)
-        // console.log(req.auth)
-        // console.log('courseData', course)
-        // console.log('userId', userId)
-        // const user = await User.findOne({userId})
-        const user = await User.findById(id)
-        // const course = await Course.findById('6ae8f4d32d2bb7ac2eccef78')
-        // console.log('course', course)
-        console.log('user', user)
-        console.log('user', user)
-        if (!user) {
-            return res.json({success:false, message:'user not found'})
-        }
-        res.json({success:true, user})
-    } catch (error) {
-        res.json({success:false, messge:error.message})
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-    // try {
-    //     const courses = await Course.find({ isPublished: true }).populate({path:'educator'})
-    //     .select(['-courseContent', '-enrolledStudents'])
-    //     // // const courses = await Course.findOne({ coursePrice: 0 })
-    //     // const users = await Course.updateMany({}, {
-    //     //     $set: {
-    //     //         educator:
-    //     //         {
-    //     //             x: 1, test: 0 
-                        
-    //     //             }
-    //     //     }
-    //     // })
-
-    //     const educatorId = req.auth.userId
-    //     const user = await User.findOne({ educatorId })
-    //      await Course.updateMany({}, {
-    //         $set: {
-    //             educator: {
-    //                 email: user.email, name: user.name,
-    //                 imageUrl: user.image,
-    //                 enrolledCourses: {}
-    //                 // enrolledCourses: {course:1, lecture:1, chapter:1}
-    //     } } })
-        
-    //     console.log(user)
-
-    //     res.json({success:true, courses})
-    // } catch (error) {
-    //     res.json({success:false, message:error.message})
-    // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // try {
-    //     console.log(req.auth)
-    //     const userId = req.auth.userId
-    //     const user = await User.findById(userId)
-    //     // const user = await User.findById(clerkId)
-    //     if (!user) {
-    //         return res.json({success:false, message:'user not found'})
-    //     }
-    //     res.json({success:true, user})
-    // } catch (error) {
-    //     res.json({success:false, messge:error.message})
-    // }
-        // const educatorId = req.auth.userId
-        // const user = await User.findOne({ educatorId })
-        // console.log('userData',user)
-    const educatorId = req.auth.userId
-    const user = await User.findOne({ educatorId })
-    //   if (!user) {
-    //         return res.json({success:false, message:'user not found'})
-    // }
-    //  res.json({success:true, user})
+const generateToken = (id) => {
+    return jwt.sign({id}, process.env.JWT_SECRET, {expiresIn:'30d'})
 }
-export const userEnrolledCourses = async (req, res) => {
+export const registerUser = async (req, res) => {
+    const { name, email, password } = req.body
     try {
-        const userId = req.auth.userId
-        const userData = await User.findById(userId).populate('enrolledCourses')
-        res.json({success:true, enrolledCourses:userData.enrolledCourses})
+        const userExists = await User.findOne({ email })
+        if (userExists) {
+            return res.json({success:false, message:'user already exists'})
+        }
+        const user = await User.create({ name, email, password })
+        const token = generateToken(user._id)
+        res.json({success:true, token})
     } catch (error) {
-        res.json({success:false, message:error.message})
+        return res.json({success:false, message:error.message})
     }
 }
-// import { User } from "../models/User.js"
-
-// export const getUserData = async (req, res) => {
-//     // try {
-//     //     console.log(req.auth)
-//     const userId = req.auth.userId
-//     console.log('userId',userId)
-//     //     const user = await User.findById(userId)
-//     //     // const user = await User.findById(clerkId)
-//     //     if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     //     }
-//     //     res.json({success:true, user})
-//     // } catch (error) {
-//     //     res.json({success:false, messge:error.message})
-//     // }
-//     // try {
-//     //     console.log(req.auth)
-//     //     const userId = req.auth.userId
-//     //     const user = await User.findById(userId)
-//     //     // const user = await User.findById(clerkId)
-//     //     if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     //     }
-//     //     res.json({success:true, user})
-//     // } catch (error) {
-//     //     res.json({success:false, messge:error.message})
-//     // }
-//         // const educatorId = req.auth.userId
-//         // const user = await User.findOne({ educatorId })
-//         // console.log('userData',user)
-//     // const educatorId = req.auth.userId
-//     // const user = await User.findOne({ educatorId })
-    
-//     //   if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     // }
-//     //  res.json({success:true, user})
-//     //     const  userId  = req.auth.userId
-//     // console.log('userId', userId)
-// }
-// export const userEnrolledCourses = async (req, res) => {
-//     try {
-//             const educatorId = req.auth.userId
-//     const userData = await User.findOne({ educatorId })
-//         res.json({ success: true, enrolledCourses: userData.enrolledCourses })
-//     } catch (error) {
-//         res.json({success:false, message:error.message})
-//     }
-//     // try {
-//     //     const userId = req.auth.userId
-//     //     const userData = await User.findById(userId)
-//     //         // .populate('enrolledCourses')
-//     //     res.json({success:true, enrolledCourses:userData.enrolledCourses})
-//     // } catch (error) {
-//     //     res.json({success:false, message:error.message})
-//     // }
-// }
-export const purchaseCourse = async (req, res) => {
+export const loginUser = async (req, res) => {
+    const { email, password } = req.body
     try {
-        const { courseId } = req.body
-        const { origin } = req.headers
-        const clerkUserId = req.auth.userId
-        const user = await User.findOne({ clerkUserId })
-        const id = user._id.toString('')
-        const userData = await User.findById(id)
-        const courseData = await Course.findById(courseId)
-        if (!userData || !courseData) {
-            return res.json({success:false, message:'data not found'})
-        }
-        const purchaseData = {
-            courseId: courseData._id,
-            userId:user._id,
-            amount: (courseData.coursePrice - courseData.discount * courseData.coursePrice / 100).toFixed(2)
-        }
-        const newPurchase = await Purchase.create(purchaseData)
-        const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
-        const currency = process.env.CURRENCY.toLowerCase()
-        const line_items = [{
-            price_data: {
-                currency,
-                product_data: {
-                    name: courseData.courseTitle
-                },
-                unit_amount:200
-                // unit_amount: Math.floor(newPurchase.amount) * 100
-            },
-            quantity:1
-        }]
-        const session = await stripeInstance.checkout.sessions.create({
-            success_url: `${origin}/loading/my-enrollments`,
-            cancel_url: `${origin}/`,
-            line_items: line_items,
-            mode: 'payment',
-            metadata: {
-                pruchaseId:newPurchase._id.toString()
+        const user = await User.findOne({ email })
+        if (user) {
+            const isMatch = await bcrypt.compare(password, user.password)
+            if (isMatch) {
+                const token = generateToken(user._id)
+                return res.json({success:true, token})
             }
-        })
-        res.json({success:true, session_url:session.url})
+        }
+        return res.json({success:false, message:'invalid email or password'})
     } catch (error) {
-        res.json({success:false, error:error.message})
+        return res.json({success:false, message:error.message})
     }
 }
-
-
-
-
-
-
-
-// export const getUserData = async (req, res) => {
-//     try {
-//         const clerkId = req.auth.userId
-//         const userId = await User.findOne({clerkId})
-//         console.log('id', userId)
-//         const id = userId._id
-//         console.log('id', id)
-//         // console.log(req.auth)
-//         // console.log('courseData', course)
-//         // console.log('userId', userId)
-//         // const user = await User.findOne({userId})
-//         // const user = await User.findById()
-//         const user = await User.findById(id)
-//         if (!user) {
-//             return res.json({success:false, message:'user not found'})
-//         }
-//         res.json({success:true, user})
-//     } catch (error) {
-//         res.json({success:false, messge:error.message})
-//     }
-//     // try {
-//     //     console.log(req.auth)
-//     //     const userId = req.auth.userId
-//     //     const user = await User.findById(userId)
-//     //     // const user = await User.findById(clerkId)
-//     //     if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     //     }
-//     //     res.json({success:true, user})
-//     // } catch (error) {
-//     //     res.json({success:false, messge:error.message})
-//     // }
-//         // const educatorId = req.auth.userId
-//         // const user = await User.findOne({ educatorId })
-//         // console.log('userData',user)
-//     const educatorId = req.auth.userId
-//     const user = await User.findOne({ educatorId })
-//     //   if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     // }
-//     //  res.json({success:true, user})
-// }
-
-
-
-
-
-
-
-// export const getUserData = async (req, res) => {
-//     // try {
-//     //     const clerkId = req.auth.userId
-//     //     const userId = await User.findOne({clerkId})
-//     //     console.log('id', userId)
-//     //     const id = userId._id
-//     //     console.log('id', id)
-//     //     // console.log(req.auth)
-//     //     // console.log('courseData', course)
-//     //     // console.log('userId', userId)
-//     //     // const user = await User.findOne({userId})
-//     //     const user = await User.findById(id)
-//     //     if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     //     }
-//     //     res.json({success:true, user})
-//     // } catch (error) {
-//     //     res.json({success:false, messge:error.message})
-//     // }
-
-
-
-
-
-
-
-
-
-
-
-
-//     try {
-//         const courses = await Course.find({ isPublished: true }).populate({path:'educator'})
-//         .select(['-courseContent', '-enrolledStudents'])
-//         // // const courses = await Course.findOne({ coursePrice: 0 })
-//         // const users = await Course.updateMany({}, {
-//         //     $set: {
-//         //         educator:
-//         //         {
-//         //             x: 1, test: 0 
-                        
-//         //             }
-//         //     }
-//         // })
-
-//         const educatorId = req.auth.userId
-//         const user = await User.findOne({ educatorId })
-//          await Course.updateMany({}, {
-//             $set: {
-//                 educator: {
-//                     email: user.email, name: user.name,
-//                     imageUrl: user.image,
-//                     enrolledCourses: {}
-//                     // enrolledCourses: {course:1, lecture:1, chapter:1}
-//         } } })
-        
-//         console.log(user)
-
-//         res.json({success:true, courses})
-//     } catch (error) {
-//         res.json({success:false, message:error.message})
-//     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//     // try {
-//     //     console.log(req.auth)
-//     //     const userId = req.auth.userId
-//     //     const user = await User.findById(userId)
-//     //     // const user = await User.findById(clerkId)
-//     //     if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     //     }
-//     //     res.json({success:true, user})
-//     // } catch (error) {
-//     //     res.json({success:false, messge:error.message})
-//     // }
-//         // const educatorId = req.auth.userId
-//         // const user = await User.findOne({ educatorId })
-//         // console.log('userData',user)
-//     const educatorId = req.auth.userId
-//     const user = await User.findOne({ educatorId })
-//     //   if (!user) {
-//     //         return res.json({success:false, message:'user not found'})
-//     // }
-//     //  res.json({success:true, user})
-// }
+export const getUser = async (req, res) => {
+    try {
+        const user = req.user
+        return res.json({success:true, user})
+    } catch (error) {
+        return res.json({success:false, message:error.message})
+    }
+}
+export const getPublishedImages = async (req, res) => {
+    try {
+        const publishedImageMessages = await Chat.aggregate([
+            { $unwind: '$messages' },
+            {
+                $match: {
+                    'messages.isImage': true,
+                    'messages.isPublished':true
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    imageUrl: '$messages.content',
+                    userName:'$username'
+             }   
+            }
+        ])
+        res.json({success:true, images:publishedImageMessages.reverse()})
+    } catch (error) {
+        return res.json({success:false, message:error.message})
+    }
+}
