@@ -1,3 +1,4 @@
+
 import stripe from 'stripe'
 import {User} from '../models/User.js'
 import { Webhook } from 'svix'
@@ -210,60 +211,73 @@ export const stripeWebhooks = async (request, response) => {
  console.log(request, 'request from stripewebhooks')
     const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
     const sig = request.headers['stripe-signature']
-    console.log('sig', sig)
-    const payload = JSON.stringify(body)
-    // const endpointSecret='whsec_oRI74zxcSnxFOBhPSesgy15UvtvgbZBr'
     let event
     try {
-        event = stripeInstance.webhooks.constructEvent(payload,
- sig,
- 'whsec_QibV8vJroeRScGnM6INgPUqUkJkrpExy')
+        event = stripeInstance.webhooks.constructEvent(req.body,
+ sig, process.env.STRIPE_WEBHOOK_SECRET)
     } catch (error) {
         return response.status(400).send(`webhook error ${error.message}}`)
     }
     try {
-        //     switch (event.type) {
-        // case 'payment_intent.succeeded': {
-        //     const paymentIntent = event.data.object
-        //     const paymentIntentId = paymentIntent.id
-        //     const session = await stripeInstance.checkout.sessions.list({
-        //         payment_intent:paymentIntentId
-        //     })
-        //     const { purchaseId } = session.data[0].metadata
-            
-            // const purchaseData = await Purchase.findById(purchaseId)
-            
-            // const userData = await User.findById(purchaseData.userId)
-            // const courseData = await Course.findById(purchaseData.courseId.toString())
-            const purchaseData = await Purchase.findById('6aeb8eea68d5597ad9b5ba7d')
-            
-            const userData = await User.findById('6aea3bee5b8e27bab5ba9535')
-            const courseData = await Course.findById('6aeb8e8268d5597ad9b5ba7c')
-            courseData.enrolledStudents.push('6aea3bee5b8e27bab5ba9535')
-            // courseData.enrolledStudents.push(userData)
+        // switch (event.type) {
+        //     case 'payment_intent.succeeded': {
+        //         const paymentIntent = event.data.object
+        //         const sessionList = await stripeInstance.checkout.sessions.list({
+        //             payment_intent: paymentIntent.id
+        //         })
+        //         const session = sessionList.data[0]
+        //         const { bookingId } = session.metadata
+        //         await Purchase.findByIdAndUpdate(bookingId, {
+        //             isPaid: true,
+        //             paymentLink: ''
+        //         })
+        //         // await inngest.send({
+        //         //     name: 'app/show.booked',
+        //         //     data: { bookingId }
+        //         // })
+        //         break;
+        //     }
+        //     default:
+        //         console.log('unhandled event type', event.type)
+        // }
+            switch (event.type) {
+                case 'payment_intent.succeeded': {
+                      const purchase = await Purchase.findByIdAndUpdate('6aeb955a09e211ef563604d0', { status: 'completed' }, { new: true })
+                    await purchase.save()
+            const paymentIntent = event.data.object
+            const paymentIntentId = paymentIntent.id
+            const session = await stripeInstance.checkout.sessions.list({
+                payment_intent:paymentIntentId
+            })
+            const { purchaseId } = session.data[0].metadata
+            console.log('purchaseId', purchaseId)
+            const purchaseData = await Purchase.findById(purchaseId)
+            console.log('purchaseData', purchaseData)
+            const userData = await User.findById(purchaseData.userId)
+            const courseData = await Course.findById(purchaseData.courseId.toString())
+            courseData.enrolledStudents.push(userData)
             await courseData.save()
-            userData.enrolledCourses.push('6aeb8e8268d5597ad9b5ba7c')
-            // userData.enrolledCourses.push(courseData._id)
+            userData.enrolledCourses.push(courseData._id)
             await userData.save()
             purchaseData.status = 'completed'
             await purchaseData.save()
-            // break;
-        // }
-        // case 'payment_intent.payment_failed': {
-        //     const paymentIntent = event.data.object
-        //     const paymentIntentId = paymentIntent.id
-        //     const session = await stripeInstance.checkout.sessions.list({
-        //         payment_intent:paymentIntentId
-        //     })
-        //     const { purchaseId } = session.data[0].metadata
-        //     const purchaseData = await Purchase.findById(purchaseId)
-        //     purchaseData.status = 'failed'
-        //     await purchaseData.save()
-        //     break;
-        // }
-        // default:
-        //     console.log(`unhandled event type ${event.type}`)
-    // }
+            break;
+        }
+        case 'payment_intent.payment_failed': {
+            const paymentIntent = event.data.object
+            const paymentIntentId = paymentIntent.id
+            const session = await stripeInstance.checkout.sessions.list({
+                payment_intent:paymentIntentId
+            })
+            const { purchaseId } = session.data[0].metadata
+            const purchaseData = await Purchase.findById(purchaseId)
+            purchaseData.status = 'failed'
+            await purchaseData.save()
+            break;
+        }
+        default:
+            console.log(`unhandled event type ${event.type}`)
+    }
         response.json({
             received: true
         })
@@ -278,23 +292,6 @@ export const stripeWebhooks = async (request, response) => {
 
 
 // 9:59
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -613,55 +610,3 @@ export const stripeWebhooks = async (request, response) => {
 //         response.status(500).send('internal server error')
 //     }
 // }
-
-
-
-
-
-// // 9:59
-
-
-
-// // import stripe from 'stripe'
-// // import Booking from '../models/Bookings.js'
-// // // import { inngest } from '../inngest/index.js'
-// // export const stripeWebhooks = async (request, response) => {
-//     // console.log(request, 'request from stripewebhooks')
-//     // const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY)
-//     // const sig = request.headers['stripe-signature']
-//     // let event
-//     // try {
-//     //     event = stripeInstance.webhooks.constructEvent(request.body, sig, process.env.STRIPE_WEBHOOK_SECRET)
-//     // } catch (error) {
-//     //     return response.status(400).send(`webhook error ${error.message}`)
-//     // }
-//     // try {
-//     //     switch (event.type) {
-//     //         case 'payment_intent.succeeded': {
-//     //             const paymentIntent = event.data.object
-//     //             const sessionList = await stripeInstance.checkout.sessions.list({
-//     //                 payment_intent: paymentIntent.id
-//     //             })
-//     //             const session = sessionList.data[0]
-//     //             const { bookingId } = session.metadata
-//     //             await Booking.findByIdAndUpdate(bookingId, {
-//     //                 isPaid: true,
-//     //                 paymentLink: ''
-//     //             })
-//     //             // await inngest.send({
-//     //             //     name: 'app/show.booked',
-//     //             //     data: { bookingId }
-//     //             // })
-//     //             break;
-//     //         }
-//     //         default:
-//     //             console.log('unhandled event type', event.type)
-//     //     }
-//     //     response.json({
-//     //         received: true
-//     //     })
-//     // } catch (err) {
-//     //     console.log('webhook processing error', err)
-//     //     response.status(500).send('internal server error')
-//     // }
-// // }
