@@ -18,8 +18,8 @@ const transactionSchema = new mongoose.Schema({
         required:true
     },
     isPaid: {
-        type: String,
-        default:'test'
+        type: Boolean,
+        default:false
     }
 }, { timestamps: true })
 const Transaction = mongoose.model('Transaction', transactionSchema)

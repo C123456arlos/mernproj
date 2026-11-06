@@ -52,16 +52,23 @@ export const purchasePlan = async (req, res) => {
         if (!plan) {
             return res.json({success:false, message:'invalid plan'})
         }
+        const dataPurchase = Purchase.findById('6aebaf1f80a6456a2038f000')
+        dataPurchase.status='pending'
         const purchaseData = await Purchase.findOne({courseId})
-        console.log('data',data)
-        const courseDataId = purchaseData.courseId.toString()
-        console.log('coursedataid', courseDataId)
-        const courseData = await Course.findById(courseDataId)
-        courseData.enrolledStudents.push(purchaseData.userId)
-        console.log('courseData', courseData)
-        const userData = await User.findById(purchaseData.userId)
-        userData.enrolledCourses.push(purchaseData.courseId)
-        console.log(userData)
+        console.log(purchaseData)
+                purchaseData.status = 'pending'
+                            console.log(purchaseData)
+                            await purchaseData.save()
+                const courseDataId = purchaseData.courseId.toString()
+                console.log('coursedataid', courseDataId)
+                const courseData = await Course.findById(courseDataId)
+                            courseData.enrolledStudents.push(purchaseData.userId)
+                            await courseData.save()
+                console.log('courseData', courseData)
+                const userData = await User.findById(purchaseData.userId)
+                userData.enrolledCourses.push(purchaseData.courseId)
+                            console.log(userData) 
+                            await userData.save()
         const transaction = await Transaction.create({
             userId: userId,
             planId: plan._id,
