@@ -7,7 +7,8 @@ import toast from 'react-hot-toast'
 const Credits = () => {
   const [plans, setPlans] = useState([])
   const [loading, setLoading] = useState(true)
-  const{token, axios}=useAppContext()
+  const { token, axios } = useAppContext()
+  console.log(token)
   const fetchPlans = async () => {
     try {
       const { data } = await axios.get('/api/credit/plan', {

@@ -9,6 +9,8 @@ import creditRouter from './routes/creditRoutes.js'
 import { stripeWebhooks } from './controllers/webhooks.js'
 import dns from "node:dns/promises"
 import { protect } from './middleware/auth.js'
+import { getUser } from './controllers/userController.js'
+import User from './models/User.js'
 dns.setServers(["1.1.1.1"])
 const app = express()
 await connectDB()
@@ -21,6 +23,15 @@ app.use('/api/chat', chatRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/credit', creditRouter)
 app.get('/api', protect)
+app.get('/api/data', async(req, res) => {
+    try {
+        const user = await User.find()
+        return res.json({success:true, user})
+    } catch (error) {
+        return res.json({success:false, message:error.message})
+    }
+
+})
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
     console.log(`server is running on port ${PORT}`)

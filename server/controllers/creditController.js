@@ -56,7 +56,7 @@ export const purchasePlan = async (req, res) => {
         dataPurchase.status='pending'
         const purchaseData = await Purchase.findOne({courseId})
         console.log(purchaseData)
-                purchaseData.status = 'pending'
+                purchaseData.status = 'completed'
                             console.log(purchaseData)
                             await purchaseData.save()
                 const courseDataId = purchaseData.courseId.toString()
